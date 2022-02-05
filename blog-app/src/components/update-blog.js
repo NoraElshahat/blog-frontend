@@ -1,13 +1,20 @@
 import TextField from "@material-ui/core/TextField";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@material-ui/core";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function AddBlogForm() {
+export default function UpdateBlog() {
   let navigate = useNavigate();
+  const params = useParams();
   const [blog, setBlog] = useState({ title: "", body: "" });
+
+  useEffect(() => {
+    axios.get(`http://localhost:4000/blogs/${params.id}`).then((res) => {
+      setBlog({ ...res.data });
+    });
+  }, []);
 
   function handleText(e) {
     setBlog({ ...blog, [e.target.name]: e.target.value });
@@ -16,12 +23,9 @@ export default function AddBlogForm() {
   function onSubmit(e) {
     e.preventDefault();
     axios
-      .post("http://localhost:4000/blogs", blog)
-      .then(() => {
+      .patch(`http://localhost:4000/blogs/${params.id}`, blog)
+      .then((res) => {
         navigate("/blogs");
-      })
-      .catch((error) => {
-        console.log(error.response.data);
       });
   }
 
@@ -34,7 +38,7 @@ export default function AddBlogForm() {
         padding: 50,
       }}
     >
-      <h2 style={{ color: "#1F76D2" }}>Add new Blog</h2>
+      <h2 style={{ color: "#1F76D2" }}>Update Blog</h2>
 
       <div style={{ marginBottom: 20 }}>
         <TextField
@@ -44,7 +48,6 @@ export default function AddBlogForm() {
           value={blog.title}
           name="title"
           onChange={handleText}
-          required
         />
       </div>
 
@@ -56,7 +59,6 @@ export default function AddBlogForm() {
           name="body"
           value={blog.body}
           onChange={handleText}
-          required
         />
       </div>
       <div style={{ marginTop: 30 }}>

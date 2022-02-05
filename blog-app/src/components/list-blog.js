@@ -7,6 +7,8 @@ import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
 export default function Blogs() {
   const [blogs, updateBlogs] = useState([]);
@@ -16,21 +18,49 @@ export default function Blogs() {
     });
   }, []);
 
+  function deleteBlog(id) {
+    if (window.confirm("Are you Sure to Delete this Blog ?")) {
+      axios.delete(`http://localhost:4000/blogs/${id}`).then((res) => {
+        const deletedBlog = blogs.filter((blog) => {
+          return blog._id !== id;
+        });
+
+        updateBlogs(deletedBlog);
+      });
+    }
+  }
+
   return (
     <div>
       {blogs.map((blog) => {
         return (
           <Card sx={{ maxWidth: 345, m: 10, float: "left" }} key={blog._id}>
-            <CardHeader title={blog.title} subheader={blog.createdAt} />
+            <Link
+              to={`/blog/${blog._id}`}
+              style={{ color: "#697784", textDecoration: "none" }}
+            >
+              <CardHeader
+                title={blog.title}
+                subheader={moment(blog.createdAt).format("L")}
+              />
+            </Link>
             <CardContent>
-              <Typography variant="body2" color="text.secondary">
+              <Typography noWrap variant="body2" color="text.secondary">
                 {blog.body}
               </Typography>
             </CardContent>
 
             <CardActions>
-              <DeleteIcon sx={{ ml: 10 }}></DeleteIcon>
-              <EditIcon sx={{ ml: 15 }}></EditIcon>
+              <DeleteIcon
+                sx={{ ml: 10 }}
+                onClick={() => deleteBlog(blog._id)}
+              ></DeleteIcon>
+              <Link
+                to={`/update-blog/${blog._id}`}
+                style={{ color: "#212121", textDecoration: "none" }}
+              >
+                <EditIcon sx={{ ml: 4 }}></EditIcon>
+              </Link>
             </CardActions>
           </Card>
         );
