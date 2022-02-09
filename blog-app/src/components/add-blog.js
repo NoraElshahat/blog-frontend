@@ -19,7 +19,7 @@ export default function AddBlogForm() {
     console.log(blog, "++++++++++");
     axios
       .post("http://localhost:4000/blogs", blog)
-      .then((res) => {
+      .then(() => {
         navigate("/blogs");
       })
       .catch((error) => {

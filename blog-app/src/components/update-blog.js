@@ -9,6 +9,7 @@ export default function UpdateBlog() {
   let navigate = useNavigate();
   const params = useParams();
   const [blog, setBlog] = useState({ title: "", body: "" });
+  const [error, setErrors] = useState([]);
 
   useEffect(() => {
     axios.get(`http://localhost:4000/blogs/${params.id}`).then((res) => {
@@ -26,6 +27,9 @@ export default function UpdateBlog() {
       .patch(`http://localhost:4000/blogs/${params.id}`, blog)
       .then((res) => {
         navigate("/blogs");
+      })
+      .catch((error) => {
+        setErrors(error.response.data.message);
       });
   }
 
@@ -48,6 +52,7 @@ export default function UpdateBlog() {
           value={blog.title}
           name="title"
           onChange={handleText}
+          required
         />
       </div>
 
@@ -59,7 +64,21 @@ export default function UpdateBlog() {
           name="body"
           value={blog.body}
           onChange={handleText}
+          required
         />
+      </div>
+
+      <div>
+        {error.length !== 0
+          ? error.map((err) => {
+              return (
+                <span style={{ color: "red" }}>
+                  {err}
+                  <br></br>
+                </span>
+              );
+            })
+          : ""}
       </div>
       <div style={{ marginTop: 30 }}>
         <Button onClick={onSubmit}>Submit</Button>
