@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function AddBlogForm() {
   let navigate = useNavigate();
   const [blog, setBlog] = useState({ title: "", body: "" });
+  const [error, setErrors] = useState([]);
 
   function handleText(e) {
     setBlog({ ...blog, [e.target.name]: e.target.value });
@@ -15,13 +16,14 @@ export default function AddBlogForm() {
 
   function onSubmit(e) {
     e.preventDefault();
+    console.log(blog, "++++++++++");
     axios
       .post("http://localhost:4000/blogs", blog)
-      .then(() => {
+      .then((res) => {
         navigate("/blogs");
       })
       .catch((error) => {
-        console.log(error.response.data);
+        setErrors(error.response.data.message);
       });
   }
 
@@ -58,6 +60,19 @@ export default function AddBlogForm() {
           onChange={handleText}
           required
         />
+      </div>
+
+      <div>
+        {error.length !== 0
+          ? error.map((err) => {
+              return (
+                <span style={{ color: "red" }}>
+                  {err}
+                  <br></br>
+                </span>
+              );
+            })
+          : ""}
       </div>
       <div style={{ marginTop: 30 }}>
         <Button onClick={onSubmit}>Submit</Button>
